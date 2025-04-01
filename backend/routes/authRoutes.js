@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const Doctor = require("../models/Doctor"); // Import Doctor model
-
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 // Normal user signup
@@ -51,5 +51,28 @@ router.post("/signup", async (req, res) => {
 //     res.status(500).json({ message: "Server error" });
 //   }
 // });
+router.post("/signin", async (req, res) => {
+  console.log("Sign-in Request Data:", req.body); // Log request data
+
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "User not found" });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+
+    const token = jwt.sign({ id: user._id }, "secretKey", { expiresIn: "1h" });
+
+    res.json({ success: true, token, user });
+  } catch (err) {
+    console.error("Sign-in Error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 module.exports = router;
