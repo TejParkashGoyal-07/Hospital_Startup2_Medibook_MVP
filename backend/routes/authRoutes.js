@@ -1,0 +1,55 @@
+const express = require("express");
+const bcrypt = require("bcryptjs");
+const User = require("../models/User");
+const Doctor = require("../models/Doctor"); // Import Doctor model
+
+const router = express.Router();
+
+// Normal user signup
+router.post("/signup", async (req, res) => {
+  try {
+    const { fullName, email, phone, password, userType } = req.body;
+
+    // Check if the user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) return res.status(400).json({ message: "User already exists" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({ fullName, email, phone, password: hashedPassword, userType });
+    await newUser.save();
+
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Doctor signup
+// router.post("/signup-doctor", async (req, res) => {
+//   try {
+//     const { fullName, email, phone, password, specialization, experience, availableFrom, availableTo } = req.body;
+
+//     const existingDoctor = await Doctor.findOne({ email });
+//     if (existingDoctor) return res.status(400).json({ message: "Doctor already exists" });
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     const newDoctor = new Doctor({
+//       fullName,
+//       email,
+//       phone,
+//       password: hashedPassword,
+//       specialization,
+//       experience,
+//       availableHours: { from: availableFrom, to: availableTo },
+//     });
+
+//     await newDoctor.save();
+//     res.status(201).json({ message: "Doctor registered successfully" });
+//   } catch (error) {
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
+
+module.exports = router;

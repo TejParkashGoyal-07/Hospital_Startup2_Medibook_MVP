@@ -1,0 +1,3 @@
+"backend/.env"   # Ensure .env is ignored
+"backend/.env" 
+"backend/.env" 
