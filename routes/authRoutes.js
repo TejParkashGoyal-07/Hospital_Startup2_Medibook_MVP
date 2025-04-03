@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 const Patient = require("../models/Patient"); // Add this at the top
 // Import Patient model
-const diseaseOrganMapping = require("../utils/diseaseOrganMapping");
+//const diseaseOrganMapping = require("../utils/diseaseOrganMapping");
 // Normal user signup
 router.post("/signup", async (req, res) => {
   try {
